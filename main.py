@@ -61,25 +61,35 @@ def scrap_table_into_csv(soup, user_input):
 
     df = pd.DataFrame(l, columns=column_names)
     df[['TotalCases', 'ActiveCases']] = df[['TotalCases', 'ActiveCases']].astype(float)
+    df['TotalCases'] = df['TotalCases'] / 1000000  # Show Total Cases in millions
+    df['ActiveCases'] = df['ActiveCases'] / 1000000  # Show Active Cases in millions
     df.to_csv("final_project.csv")
     return df
 
 
 def plot_corona_stats(corona_stats, user_input):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
-    ax1.pie(corona_stats['TotalCases'], labels=corona_stats['Country,Other'], autopct='%1.1f%%')
-    ax2.pie(corona_stats['ActiveCases'], labels=corona_stats['Country,Other'], autopct='%1.1f%%')
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
     if user_input == 'Continents':
-        ax1.set_title("Total Cases by Continent")
-        ax2.set_title("Active Cases by Continent")
+        ax1.pie(corona_stats['TotalCases'], labels=corona_stats['Country,Other'], autopct='%1.1f%%')
+        ax1.set_title("Share of Total Cases by Continent")
+        ax2.pie(corona_stats['ActiveCases'], labels=corona_stats['Country,Other'], autopct='%1.1f%%')
+        ax2.set_title("Share of Active Cases by Continent")
     elif user_input == 'Countries':
+        ax1.bar(corona_stats['Country,Other'], corona_stats['TotalCases'],
+                color=['blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan'])
         ax1.set_title("Top 10 Countries - Total Cases")
+        ax1.set_ylabel('Total Cases in Millions')
+        ax1.tick_params(labelrotation=35)
+        ax1.yaxis.set_tick_params(pad=10)
+        ax2.bar(corona_stats['Country,Other'], corona_stats['ActiveCases'],
+                color=['blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan'])
         ax2.set_title("Top 10 Countries - Active Cases")
+        ax2.set_ylabel('Active Cases in Millions')
+        ax2.tick_params(labelrotation=35)
+        ax2.yaxis.set_tick_params(pad=10)
     plt.show()
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
